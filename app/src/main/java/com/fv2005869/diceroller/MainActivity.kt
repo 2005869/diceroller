@@ -24,6 +24,10 @@ import com.fv2005869.diceroller.ui.theme.DiceRollerTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,6 +51,7 @@ fun DiceWithButtonAndImage(modifier: Modifier = Modifier
     .fillMaxSize()
     .wrapContentSize(Alignment.Center)){
     var result by remember {mutableStateOf(1)}
+    var timesToRepeat:Int = 1
 
     val imageResource = when(result){
         1 -> R.drawable.dice_1
@@ -64,7 +69,16 @@ fun DiceWithButtonAndImage(modifier: Modifier = Modifier
             contentDescription = imageResource.toString()
         )
         Spacer(Modifier.height(16.dp))
-        Button(onClick= {result = (1..6).random() }){
+        Button(onClick= {
+            timesToRepeat = (1..12).random()
+
+            CoroutineScope(Dispatchers.Main).launch {
+                for (i in 1..timesToRepeat){
+                    result = (1..6).random()
+                    delay(500)
+                }
+            }
+        }){
             Text(stringResource(id = R.string.roll))
         }
     }
